@@ -8,6 +8,14 @@ interface WebsocketShipInterface {
     deg_north: number
 }
 
+interface DockingLogsInterface {
+    log_id: number
+    long: string
+    lat: string
+    status: string
+    created_at: string
+}
+
 interface ShipDataInterface {
     id: number
     ship_name: string
@@ -18,4 +26,4 @@ interface ShipDataInterface {
     created_at: string
 }
 
-export type {WebsocketShipInterface, ShipDataInterface}
+export type {WebsocketShipInterface, ShipDataInterface, DockingLogsInterface}

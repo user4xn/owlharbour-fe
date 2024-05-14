@@ -14,7 +14,8 @@ import ProfileView from '@/views/ProfileView.vue'
 import TablesView from '@/views/TablesView.vue'
 import AlertsView from '@/views/UiElements/AlertsView.vue'
 import ButtonsView from '@/views/UiElements/ButtonsView.vue'
-import ShipView from '@/views/Pages/ShipView.vue'
+import ShipView from '@/views/Ship/ShipView.vue'
+import ShipDetailView from '@/views/Ship/ShipDetailView.vue'
 
 const routes = [
   {
@@ -36,11 +37,11 @@ const routes = [
     }
   },
   {
-    path: '/calendar',
+    path: '/ship/:id/detail',
     name: 'calendar',
-    component: CalendarView,
+    component: ShipDetailView,
     meta: {
-      title: 'Calendar',
+      title: 'Ship Detail',
       requiresAuth: true,
     }
   },

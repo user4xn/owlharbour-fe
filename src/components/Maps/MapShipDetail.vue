@@ -13,29 +13,26 @@ import FishermanMarker from '@/assets/images/map/fisherman-marker.png'
 import { onMounted, watch, props } from 'vue'
 import { useApiFetch } from '@/composables/axios';
 import type { ApiResponse } from '@/interfaces/api';
-import type { WebsocketShipInterface } from '@/interfaces/ship';
 
-const props = defineProps(['recenter'])
-
-watch(() => props.recenter, (newValue) => {
-    reCenter()
-})
+const props = defineProps(['recenter', 'shipData'])
 
 let center = { lat : -6.846155, lng : 109.128892 }
 let leaflet_map: any = null
 let leaflet_markers:any = []
-let leaflet_layerGroups:any = null
-let socket: any = null
-let ws_url = "ws://localhost:8081/api/v1/dashboard/ship-monitor/open-websocket"
+let leaflet_layer_groups:any = null
 let harbour_geo: any = []
+
+watch(() => props.recenter, (_) => {
+    reCenter()
+})
 
 onMounted(() => {
   fetchSetting()
   initiateMap()
-
-  setTimeout(() => {
-    connectWs(ws_url)
-  }, 300);
+  processMarker(props.shipData)
+  center.lat = props.shipData.current_lat
+  center.lng = props.shipData.current_long
+  reCenter()
 })
 
 function reCenter() {
@@ -49,14 +46,13 @@ async function initiateMap() {
   L.tileLayer(street, {
     maxNativeZoom: 19,
     maxZoom: 30,
-    minZoom: 12,
+    minZoom: 14,
     noWrap: true,
     attribution: ''
   }).addTo(leaflet_map)
 
-  leaflet_layerGroups = L.layerGroup().addTo(leaflet_map)
+  leaflet_layer_groups = L.layerGroup().addTo(leaflet_map)
 
-  // Resize markers on zoom change
   leaflet_map.on('zoomend', resizeMarkers);
 }
 
@@ -88,71 +84,9 @@ function fetchSetting() {
   }   
 }
 
-async function connectWs(url: string) {
-  console.log("ws attempting connection ...")
-  try {
-    if (socket && socket.readyState === WebSocket.OPEN) {
-      console.log("ws already connected")
-      return
-    }
-
-    socket = new WebSocket(url)
-
-    socket.onerror = (error: any) => {
-      console.error("socket on error:", error)
-    }
-
-    socket.onopen = () => {
-      console.log("ws successfully connected")
-    }
-
-    socket.onmessage = (message: any) => {
-      processSocketData(message)
-    }
-
-    socket.onclose = (event: any) => {
-      if (event.code === 1000) {
-        console.log("ws successfuly closed safely")
-      } else {
-        console.log("ws closed with code:", event.code)
-        console.log("reconnecting ...")
-        setTimeout(() => {
-          connectWs(url)
-        }, 5000)
-      }
-    }
-  } catch (error) {
-    console.log("err!:", error)
-
-    if (socket && socket?.readyState === WebSocket.OPEN) {
-      console.log("failed, need to close ws")
-      socket.close()
-      return
-    }
-
-    console.log("reconnecting ...")
-    setTimeout(() => {
-      connectWs(url)
-    }, 5000)
-  }
-}
-
-function processSocketData(data: any) {
-    var data = data.data
-    var ships = JSON.parse(data)
-
-    ships.forEach((ship: WebsocketShipInterface) => {
-      processMarker(ship)
-    })
-}
-
-async function processMarker(ship: WebsocketShipInterface) {
+async function processMarker(ship: any) {
+    console.log(ship)
     try {
-      if (leaflet_markers.hasOwnProperty(ship.ship_id)) {
-        leaflet_markers[ship.ship_id].setLatLng([ship.geo[1], ship.geo[0]])
-        // @ts-ignore
-        leaflet_markers[ship.ship_id].setRotationAngle(ship.deg_north)
-      } else {
         const sizeByZoom = calculateIconSize(leaflet_map.getZoom());
 
         var shipIcon = L.icon({
@@ -163,30 +97,25 @@ async function processMarker(ship: WebsocketShipInterface) {
 
         var fishermanIcon = L.icon({
           iconUrl: FishermanMarker,
-          iconSize: [35, 50]
+          iconSize: [sizeByZoom[0], sizeByZoom[1]],
         })
 
-        var marker = L.marker([ship.geo[1], ship.geo[0]], {
+        var marker = L.marker([ship.current_lat, ship.current_long], {
           icon: ship.on_ground === 1 ? fishermanIcon : shipIcon
         })
         .bindTooltip(ship.ship_name)
-        .addTo(leaflet_layerGroups)
+        .addTo(leaflet_layer_groups)
         .on("click", clickZoom)
 
-        // @ts-ignore
-        marker.setRotationAngle(ship.deg_north)
+        if(ship.on_ground == 0) {
+          // @ts-ignore
+          marker.setRotationAngle(ship.deg_north)
+        }
 
         leaflet_markers[ship.ship_id] = marker
-      }
     } catch (error) {
       console.log("error add marker", error)
     }
-}
-
-function clickZoom(e: any) {
-  leaflet_map.flyTo(e.target.getLatLng(), 16, {
-    duration: 5
-  })
 }
 
 function resizeMarkers() {
@@ -208,6 +137,12 @@ function calculateIconSize(zoom: number) {
   const size = baseSize * (zoom / scaleFactor);
   return [size, size * 2]; // Width, Height
 }
+
+function clickZoom(e: any) {
+  leaflet_map.flyTo(e.target.getLatLng(), 16, {
+    duration: 5
+  })
+}
 </script>
 
 <template>
@@ -215,6 +150,6 @@ function calculateIconSize(zoom: number) {
     class="col-span-12 rounded-sm border border-stroke bg-white py-1 px-1  shadow-default dark:border-strokedark dark:bg-boxdark"
   >
     <!-- Map container -->
-    <div id="map" style="height: 85vh;"></div>
+    <div id="map" style="height: 45vh;"></div>
   </div>
 </template>

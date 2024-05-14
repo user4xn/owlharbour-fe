@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { useSidebarStore } from '@/stores/sidebar'
 import DarkModeSwitcher from './DarkModeSwitcher.vue'
-import DropdownMessage from './DropdownMessage.vue'
 import DropdownNotification from './DropdownNotification.vue'
 import DropdownUser from './DropdownUser.vue'
 
@@ -53,11 +52,24 @@ const { isSidebarOpen, toggleSidebar } = useSidebarStore()
         </button>
         <!-- Hamburger Toggle BTN -->
         <router-link class="block flex-shrink-0 lg:hidden" to="/">
-          <img src="@/assets/images/logo/logo-icon.svg" alt="Logo" />
+          <img src="@/assets/images/logo/logo-new-icon.svg" alt="Logo" />
         </router-link>
       </div>
 
-      <div class="flex items-center gap-3 2xsm:gap-7 ms-auto">
+      <div class="hidden sm:block">
+          <div class="relative">
+            <span class="text-sm font-medium text-black dark:text-white">TEGAL SARI HARBOUR 
+                <span class="bg-primary px-3 py-1 text-white rounded-full">
+                  996314
+                </span>
+            </span>
+            <div>
+              Tegalsari, Tegal Barat, Tegal City, Central Java 52111
+            </div>
+          </div>
+      </div>
+
+      <div class="flex items-center gap-3 2xsm:gap-7">
         <ul class="flex items-center gap-2 2xsm:gap-4">
           <li>
             <!-- Dark Mode Toggler -->
@@ -68,10 +80,6 @@ const { isSidebarOpen, toggleSidebar } = useSidebarStore()
           <!-- Notification Menu Area -->
           <DropdownNotification />
           <!-- Notification Menu Area -->
-
-          <!-- Chat Notification Area -->
-          <DropdownMessage />
-          <!-- Chat Notification Area -->
         </ul>
 
         <!-- User Area -->

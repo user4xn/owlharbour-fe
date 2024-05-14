@@ -1,162 +1,96 @@
-# TailAdmin Vue - Free Vue.js Tailwind CSS Admin Dashboard Template
+# OwlHarbour - Harbour Ship Management
 
-TailAdmin Vue is a free, open-source admin dashboard template **built on Vue.js**, popular and progressive JavaScript
-framework, and **Tailwind CSS**. This **powerful combination** provides developers with an extensive library of
-essential components, elements, and pages to launch a comprehensive and data-centric back-end, dashboard, or admin panel
-solution for any Vue.js based web projects.
+Welcome to OwlHarbour Monitoring Ship! This application provides a comprehensive monitoring solution for maritime vessels, focusing on optimizing performance, safety, and operational efficiency.
 
-[![TailAdmin Vue - Free Vue.js Tailwind CSS Admin Dashboard Template](https://ucarecdn.com/3e01b731-d63b-47f0-ba92-7686ecd49f9b/tailadminvue.png)](https://free-vue-demo.tailadmin.com/)
+## Table of Contents
 
-With TailAdmin Vue, you can leverage **Vue.js 3** features such as declarative rendering, component-based architecture,
-Vue Router for routing, and Pinia for state management. It also harnesses the power of Tailwind CSS for rapid UI
-development with its low-level utility classes and responsive design capabilities.
+- [Features](#features)
+- [Installation](#installation)
+- [Usage](#usage)
+- [Contributing](#contributing)
+- [License](#license)
+- [Contact](#contact)
 
-### [✨ Visit Website](https://tailadmin.com/)
+## Features
 
-### [🚀 Live Demo](https://free-vue-demo.tailadmin.com/)
-
-The VueJS admin dashbaord template offers a **diverse set of dashboard UI components**, elements, and pages, including
-forms, tables, charts, maps, and **pre-built pages**, which are critical for creating a high-quality and complete admin
-panel or dashboard. Whether you’re developing a complex web application or a simple website, TailAdmin Vue provides a
-robust and flexible foundation to streamline your workflow and enhance your project's functionality.
-
-## TailAdmin Vue Features
-
-**💎 High-quality, Premium Modern Design:**
-A thoughtfully designed dashboard template with a deep focus on UX/UI, already trusted and utilized by over 10K+ web
-apps worldwide.
-
-**✨ Vue 3:**
-Get enhanced performance with the latest Vue version.
-
-**⚡ Vite Build System:**
-Enjoy quick development with Vite, ensuring fast code compilation.
-
-**🔀 Vue Router:**
-Manage app navigation with ease using Vue Router for seamless transitions.
-
-**💡 Reactive Utilities:**
-Enhance component reactivity with @vueuse/core utilities.
-
-**📊 Charting with ApexCharts:**
-Visualize data with ApexCharts for beautiful analytics.
-
-**🗺️ Vector Maps with JSVectorMap:**
-Easily integrate interactive vector maps with JSVectorMap.
-
-**🖌️ UI with Tailwind CSS:**
-Frontend UI built on the powerful and versatile Tailwind CSS framework.
-
-**💫 TypeScript Support:**
-Write safer, maintainable code with TailAdmin Vue's TypeScript Support.
-
-**✅ Linting and Formatting:**
-Maintain a clean codebase with built-in linting and formatting.
-
-**🗃️ State Management with Pinia:**
-Handle your app's state with Pinia for clean, organized code.
-
-### TailAdmin PRO vs TailAdmin FREE Comparison 📊
-
-#### [TailAdmin PRO](https://vue-demo.tailadmin.com/)
-
-- 4 Unique Dashboards: Analytics, Ecommerce, Marketing, and CRM (More will be added)
-- 120+ Dashboard UI Components
-- 200+ Total UI Elements
-- 45+ HTML Files
-- All Essential Elements and Files
-- Full Figma Design Source - As Shown on Demo
-
-#### [TailAdmin Vue FREE](https://free-vue-demo.tailadmin.com/)
-
-- 1 Unique Dashboard
-- 30+ Dashboard UI Components
-- 50+ Total UI Elements
-- 10+ HTML Files
-- TypeScript Support
-- Basic UI Kit Elements and Files
-- Figma Design Source - Free Sample
-
-___
-
-### [⬇️ Download Now](https://tailadmin.com/download)
-
-### [⚡ Get PRO Version](https://tailadmin.com/pricing)
-
-### [📄 Documentation](https://tailadmin.com/docs)
-
-### [🖌️ TailAdmin Figma Free Sample](https://www.figma.com/community/file/1214477970819985778)
-
-### [👉 TailAdmin HTML Version](https://github.com/TailAdmin/tailadmin-free-tailwind-dashboard-template)
-
-### [👉 TailAdmin React Version](https://github.com/TailAdmin/free-react-tailwind-admin-dashboard)
-
-### [👉 TailAdmin Next.js Version](https://github.com/TailAdmin/free-nextjs-admin-dashboard)
+- **Real-time Monitoring**: Track ship parameters including speed, location, fuel consumption, and engine performance.
+- **Alert System**: Receive notifications for critical events and anomalies.
+- **Data Analytics**: Analyze historical data for route optimization and performance enhancements.
+- **Dashboard**: User-friendly interface for data visualization.
+- **Customizable Reports**: Generate and export detailed reports.
+- **Integration**: Seamless integration with maritime systems and IoT devices.
 
 ## Installation
 
-```sh
-npm install
-```
+### Prerequisites
 
-### Compile and Hot-Reload for Development
+- Node.js (version 14.x or higher)
+- npm (version 6.x or higher)
+- Docker (optional, for containerized deployment)
 
-```sh
-npm run dev
-```
+### Steps
 
-### Type-Check, Compile and Minify for Production
+1. Clone the repository:
 
-```sh
-npm run build
-```
+    ```bash
+    git clone https://github.com/user4xn/owlharbour-fe.git
+    cd owlharbour-fe
+    ```
 
-### Lint with [ESLint](https://eslint.org/)
+2. Install the dependencies:
 
-```sh
-npm run lint
-```
+    ```bash
+    npm install
+    ```
 
-## 200+ Dashboard UI Components for Vue.js and Tailwind CSS
+3. Configure environment variables (see [Configuration](#configuration)).
 
-**Vue.js** and **Tailwind** are two highly acclaimed technologies that have brought significant advancements to web
-development. 🚀
+4. Start the application:
 
-**Vue.js** is a JavaScript framework specifically designed for creating user interfaces, while **Tailwind** is a CSS
-framework that focuses on utility-first styling approaches. 🛠️
+    ```bash
+    npm run dev
+    ```
 
-With **TailAdmin Vue**, you gain access to an extensive collection of **200+ essential UI components** built exclusively
-for Vue.js and styled using the powerful capabilities of Tailwind CSS. 🎨
+5. For Docker deployment, build and run the Docker container:
 
-This comprehensive library covers various elements such as:
+    ```bash
+    docker build -t owlharbour-monitoring-ship .
+    docker run -d -p 3000:3000 owlharbour-monitoring-ship
+    ```
 
-- Charts 📊
-- Graphs 📈
-- Navigation Bars 📑
-- Tabs 🗂️
-- Buttons 🔘
-- Cards 🃏
-- Tables 📏
-- Profiles 👥
-- Forms 📝
-- Modals 💬
-- App Pages 📖
-- Calendar 📅 functionalities.
+## Usage
 
-Additionally, it also provides example templates tailored for web applications. 💻 This makes it a one-stop solution for
-all your Vue.js dashboard development needs! 🎯
+### Running the Application
 
-## Update Logs
+- **Development**: Use `npm run dev` to run the app in development mode. The app will reload on edits.
+- **Production**: Use `npm run build` to build the app for production.
 
-### Version 0.1.1 - [Feb 08, 2024]
+### Accessing the Dashboard
 
-#### Enhancements
+Open your web browser and go to `http://localhost:3000` (or the appropriate URL if deployed on a server).
 
-- **Enhancement 01:** Make it functional [Multiselect Dropdown/Form Elements].
-- **Enhancement 02:** Delete SelectGroup Components then create a SelectGroup folder and create two files under this
-  folder SelectGroupOne.vue SelectGroupTwo.vue [Select Group/Form Elements & Layout].
-- **Enhancement 03:** Update style.css file.
+## Contributing
 
-### Version 0.1.0 - Initial Release - [Jan 22, 2024]
+We welcome contributions to improve OwlHarbour Monitoring Ship. Please follow these steps:
 
-- Initial release of TailAdmin Vue.
+1. Fork the repository.
+2. Create a new branch (`git checkout -b feature-branch`).
+3. Commit your changes (`git commit -am 'Add new feature'`).
+4. Push to the branch (`git push origin feature-branch`).
+5. Create a Pull Request.
+
+Please ensure your code adheres to our coding standards and includes relevant tests.
+
+## License
+
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+
+## Contact
+
+For any inquiries or support, please contact:
+
+- Email: user4xn@owlharbour.com
+- GitHub: [OwlHarbour Monitoring Ship](https://github.com/user4xn/owlharbour-fe)
+
+Thank you for using OwlHarbour Monitoring Ship! We hope it enhances your maritime operations.
+

@@ -1,40 +1,56 @@
 <script setup lang="ts">
-import { useApiFetch } from '@/composables/axios';
-import type { ApiResponse } from '@/interfaces/api';
-import type { ShipDataInterface } from '@/interfaces/ship';
+import { useApiFetch } from '@/composables/axios'
+import type { ApiResponse } from '@/interfaces/api'
+import type { ShipDataInterface } from '@/interfaces/ship'
 import { onMounted, reactive, ref, type Ref } from 'vue'
 import { RouterLink } from 'vue-router'
 import WalkGif from '@/assets/images/map/walk.gif'
 import SeaGif from '@/assets/images/map/sea.gif'
 import debounce from 'lodash.debounce'
+import Pagination from '@/components/PaginationCard.vue'
 
 const shipsData: Ref<ShipDataInterface[]> = ref([])
 const searchInput = ref('')
+const textBlank = ref('loading...')
+const limit = 6
+const offset = ref(0)
+const currentPage = ref(1)
+const totalPages = ref(1)
 
 onMounted(() => {
   fetchShips()
 })
 
-const fetchShips = debounce((params: string='') => {
+const fetchShips = debounce(async(params: string='') => {
+  textBlank.value = 'loading...'
   try {
-    var paramBuilded: string = `limit=10&`
-    paramBuilded += `offset=0&`
+    let paramBuilded = `limit=${limit}&offset=${offset.value}&`
     if (params != ''){
       paramBuilded += `search=${params}&`
     }
 
-    const fetch = useApiFetch<ApiResponse>(`/api/v1/ship/list?${paramBuilded}`)
+    const fetch: any = await useApiFetch<ApiResponse>(`/api/v1/ship/list?${paramBuilded}`)
 
-    fetch.then((res: any) => {
-      if(res.meta.code != 200) {
-        console.error('failed fetching statistic api ', res.meta.message ?? "", res.meta.code)
-      }
+    if(fetch.meta.code != 200) {
+      console.error('failed fetching statistic api ', fetch.meta.message ?? "", fetch.meta.code)
+    }
 
-      shipsData.value = res.data as ShipDataInterface[]
-    })
+    shipsData.value = []
+
+    if(fetch.data == null) {
+      textBlank.value = 'no ship found'
+
+      return
+    }
+
+    shipsData.value = fetch.data as ShipDataInterface[]
+
+    if (fetch.meta.total ?? 10) {
+      totalPages.value = Math.ceil(fetch.meta.total ?? 10 / limit);
+    }
   } catch (error) {
     console.error('error on trying fetch', error)
-  } 
+  }
 }, 500)
 
 function borderByStatus(status: string) {
@@ -51,6 +67,12 @@ function borderByStatus(status: string) {
       return "border-gray"
       break;
   }
+}
+
+function handlePageChange(page: number) {
+  currentPage.value = page;
+  offset.value = (page - 1) * limit;
+  fetchShips(searchInput.value);
 }
 </script>
 
@@ -94,14 +116,14 @@ function borderByStatus(status: string) {
       </div>
     </div>
 
-    <div class="grid grid-cols-2 sm:gird-cols-1 gap-3 px-5 mt-5">
+    <div class="grid grid-cols-1 xl:grid-cols-2 gap-3 px-5 mt-5">
       <template v-for="(ship, index) in shipsData" :key="index" class="flex flex-col gap-9">
         <RouterLink
-          to="/"
+          :to="`/ship/${ship.id}/detail`"
           class="flex items-center gap-5 py-4 px-7.5 hover:opacity-80 dark:hover:bg-meta-4 text-white rounded-2xl area"
         >
         <div class="flex-grow grid grid-cols-4 grid-flow-col gap-4">
-          <div class="flex-grow col-span-3">
+          <div class="flex-grow col-span-4 md:col-span-4">
             <div class="flex flex-col mb-3">
               <span class="text-lg font-extrabold text-white uppercase">🚢 {{ ship.ship_name }}</span>
               <span class="text-lg font-extrabold text-white uppercase">🤵🏻 {{ ship.responsible_name }}</span>
@@ -112,7 +134,7 @@ function borderByStatus(status: string) {
               <span class="text-md font-medium text-white uppercase">📅 {{ ship.created_at }}</span>
             </div>
           </div>
-          <div class="flex justify-center content-center items-center">
+          <div class="flex justify-center content-center items-center hidden md:block z-20">
             <div 
               class="flex h-17.5 w-17.5 items-center justify-center rounded-full bg-meta-2 dark:bg-meta-4 border border-4"
               :class="borderByStatus(ship.status)"
@@ -136,9 +158,10 @@ function borderByStatus(status: string) {
         </RouterLink>
       </template>
       <div v-if="!shipsData || shipsData.length == 0" class="text-center col-span-2">
-        <span class="text-lg">Empty Data.</span>
+        <span class="text-lg">{{ textBlank }}</span>
       </div>
     </div>
+    <Pagination :currentPage="currentPage" :totalPages="totalPages" @pageChange="handlePageChange" />
   </div>
 </template>
 
