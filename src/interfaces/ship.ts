@@ -15,6 +15,14 @@ interface DockingLogsInterface {
     status: string
     created_at: string
 }
+interface LocationLogsInterface {
+    log_id: number
+    long: string
+    lat: string
+    on_ground: number
+    status: string
+    created_at: string
+}
 
 interface ShipDataInterface {
     id: number
@@ -26,4 +34,4 @@ interface ShipDataInterface {
     created_at: string
 }
 
-export type {WebsocketShipInterface, ShipDataInterface, DockingLogsInterface}
+export type {WebsocketShipInterface, ShipDataInterface, DockingLogsInterface, LocationLogsInterface}

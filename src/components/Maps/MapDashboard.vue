@@ -1,19 +1,20 @@
 <script setup lang="ts">
-import * as L from 'leaflet';
-import 'leaflet/dist/leaflet.css';
-import 'leaflet.markercluster/dist/MarkerCluster.css';
-import 'leaflet.markercluster/dist/MarkerCluster.Default.css';
-import 'leaflet.markercluster';
-import 'leaflet-rotatedmarker';
+import * as L from 'leaflet'
+import 'leaflet/dist/leaflet.css'
+import 'leaflet.markercluster/dist/MarkerCluster.css'
+import 'leaflet.markercluster/dist/MarkerCluster.Default.css'
+import 'leaflet.markercluster'
+import 'leaflet.markercluster.freezable'
+import 'leaflet-rotatedmarker'
 import ShipMarker from '@/assets/images/map/ship-marker.png'
 import FishermanMarker from '@/assets/images/map/fisherman-marker.png'
 
 
 // @ts-ignore
 import { onMounted, watch, props } from 'vue'
-import { useApiFetch } from '@/composables/axios';
-import type { ApiResponse } from '@/interfaces/api';
-import type { WebsocketShipInterface } from '@/interfaces/ship';
+import { useApiFetch } from '@/composables/axios'
+import type { ApiResponse } from '@/interfaces/api'
+import type { WebsocketShipInterface } from '@/interfaces/ship'
 
 const props = defineProps(['recenter'])
 
@@ -35,7 +36,7 @@ onMounted(() => {
 
   setTimeout(() => {
     connectWs(ws_url)
-  }, 300);
+  }, 300)
 })
 
 function reCenter() {
@@ -54,10 +55,9 @@ async function initiateMap() {
     attribution: ''
   }).addTo(leaflet_map)
 
-  leaflet_layerGroups = L.layerGroup().addTo(leaflet_map)
-
-  // Resize markers on zoom change
-  leaflet_map.on('zoomend', resizeMarkers);
+  leaflet_layerGroups = L.markerClusterGroup().addTo(leaflet_map)
+  leaflet_map.on('zoomend', resizeMarkers)
+  clusterZoom(leaflet_map.getZoom())
 }
 
 async function processHarbourGeofences(geofences: any) {
@@ -149,11 +149,12 @@ function processSocketData(data: any) {
 async function processMarker(ship: WebsocketShipInterface) {
     try {
       if (leaflet_markers.hasOwnProperty(ship.ship_id)) {
-        leaflet_markers[ship.ship_id].setLatLng([ship.geo[1], ship.geo[0]])
+        const existingMarker = leaflet_markers[ship.ship_id]
+        animateMarker(existingMarker, [ship.geo[1], ship.geo[0]])
         // @ts-ignore
         leaflet_markers[ship.ship_id].setRotationAngle(ship.deg_north)
       } else {
-        const sizeByZoom = calculateIconSize(leaflet_map.getZoom());
+        const sizeByZoom = calculateIconSize(leaflet_map.getZoom())
 
         var shipIcon = L.icon({
           iconUrl: ShipMarker,
@@ -163,7 +164,7 @@ async function processMarker(ship: WebsocketShipInterface) {
 
         var fishermanIcon = L.icon({
           iconUrl: FishermanMarker,
-          iconSize: [35, 50]
+          iconSize: [sizeByZoom[0], sizeByZoom[1]],
         })
 
         var marker = L.marker([ship.geo[1], ship.geo[0]], {
@@ -173,14 +174,38 @@ async function processMarker(ship: WebsocketShipInterface) {
         .addTo(leaflet_layerGroups)
         .on("click", clickZoom)
 
-        // @ts-ignore
-        marker.setRotationAngle(ship.deg_north)
+        if(ship.on_ground != 1) {
+          // @ts-ignore
+          marker.setRotationAngle(ship.deg_north)
+        }
 
         leaflet_markers[ship.ship_id] = marker
       }
     } catch (error) {
       console.log("error add marker", error)
     }
+}
+
+function animateMarker(marker: any, newLatLng: any) {
+  const duration = 1000
+  const frameRate = 20
+  const frameTime = 1000 / frameRate
+  const frames = duration / frameTime
+  const startLatLng = marker.getLatLng()
+  const latStep = (newLatLng[0] - startLatLng.lat) / frames
+  const lngStep = (newLatLng[1] - startLatLng.lng) / frames
+  
+  let currentFrame = 0
+  const animate = () => {
+    if (currentFrame < frames) {
+      marker.setLatLng([startLatLng.lat + latStep * currentFrame, startLatLng.lng + lngStep * currentFrame])
+      currentFrame++
+      requestAnimationFrame(animate)
+    } else {
+      marker.setLatLng(newLatLng)
+    }
+  }
+  animate()
 }
 
 function clickZoom(e: any) {
@@ -190,23 +215,32 @@ function clickZoom(e: any) {
 }
 
 function resizeMarkers() {
-  const newSize = calculateIconSize(leaflet_map.getZoom());
+  clusterZoom(leaflet_map.getZoom())
+  const newSize = calculateIconSize(leaflet_map.getZoom())
   for (let id in leaflet_markers) {
-    const marker = leaflet_markers[id];
+    const marker = leaflet_markers[id]
     const newIcon = L.icon({
       iconUrl: marker.options.icon.options.iconUrl,
       iconSize: [newSize[0], newSize[1]],
       iconAnchor: [newSize[0] / 2, newSize[1]],
-    });
-    marker.setIcon(newIcon);
+    })
+    marker.setIcon(newIcon)
   }
 }
 
 function calculateIconSize(zoom: number) {
-  const baseSize = 15;
-  const scaleFactor = 15; // Change this value to adjust how much the size changes with zoom
-  const size = baseSize * (zoom / scaleFactor);
-  return [size, size * 2]; // Width, Height
+  const baseSize = 15
+  const scaleFactor = 15
+  const size = baseSize * (zoom / scaleFactor)
+  return [size, size * 2]
+}
+
+function clusterZoom(zoom: number) {
+  if(zoom <= 15) {
+    leaflet_layerGroups.freezeAtZoom(zoom+2)
+  } else {
+    leaflet_layerGroups.freezeAtZoom(zoom+1)
+  }
 }
 </script>
 
@@ -215,6 +249,21 @@ function calculateIconSize(zoom: number) {
     class="col-span-12 rounded-sm border border-stroke bg-white py-1 px-1  shadow-default dark:border-strokedark dark:bg-boxdark"
   >
     <!-- Map container -->
-    <div id="map" style="height: 85vh;"></div>
+    <div id="map" style="height: 85vh"></div>
   </div>
 </template>
+
+<style scoped>
+.pulse-animated {
+  animation: pulse-animation 2s infinite;
+}
+
+@keyframes pulse-animation {
+  0% {
+    box-shadow: 0 0 0 0px rgb(255, 187, 50);
+  }
+  100% {
+    box-shadow: 0 0 0 20px rgba(0, 0, 0, 0);
+  }
+}
+</style>

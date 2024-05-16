@@ -3,6 +3,7 @@ export interface ApiResponse {
       status: string
       code: number
       message?: string
+      total?: number
   };
   data: any;
 }

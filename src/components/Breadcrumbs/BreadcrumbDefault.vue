@@ -1,5 +1,5 @@
 <script setup lang="ts">
-const props = defineProps(['pageTitle', 'pageFrom'])
+const props = defineProps(['pageTitle', 'pageFrom', 'urlFrom'])
 </script>
 
 <template>
@@ -11,7 +11,7 @@ const props = defineProps(['pageTitle', 'pageFrom'])
     <nav>
       <ol class="flex items-center gap-2">
         <li>
-          <router-link class="font-medium" to="/"> {{ props.pageFrom ?? 'Dashboard' }} / </router-link>
+          <router-link class="font-medium" :to="props.urlFrom ?? '/'"> {{ props.pageFrom ?? 'Main' }} / </router-link>
         </li>
         <li class="font-medium text-primary">{{ props.pageTitle }}</li>
       </ol>

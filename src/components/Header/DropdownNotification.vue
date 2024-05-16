@@ -1,10 +1,16 @@
 <script setup lang="ts">
+import { useApiFetch } from '@/composables/axios';
+import type { ApiResponse } from '@/interfaces/api';
 import { onClickOutside } from '@vueuse/core'
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
 
 const target = ref(null)
 const dropdownOpen = ref(false)
 const notifying = ref(true)
+
+onMounted(() => {
+  fetchCountPairing()
+})
 
 onClickOutside(target, () => {
   dropdownOpen.value = false
@@ -12,31 +18,29 @@ onClickOutside(target, () => {
 
 const notificationItems = ref([
   {
-    route: '#',
-    title: 'Edit your information in a swipe',
-    details:
-      'Sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim.',
-    time: '12 May, 2025'
-  },
-  {
-    route: '#',
-    title: 'It is a long established fact',
-    details: 'that a reader will be distracted by the readable.',
-    time: '24 Feb, 2025'
-  },
-  {
-    route: '#',
-    title: 'There are many variations',
-    details: 'of passages of Lorem Ipsum available, but the majority have suffered',
-    time: '04 Jan, 2025'
-  },
-  {
-    route: '#',
-    title: 'There are many variations',
-    details: 'of passages of Lorem Ipsum available, but the majority have suffered',
-    time: '01 Dec, 2024'
+    route: '/pairing-registry',
+    title: '(X) Pending Pairing Request.',
+    details: 'Click here to see all pairing request data from new ship.',
+    time: 'forever'
   }
 ])
+
+async function fetchCountPairing() {
+  try {
+    const res: any = await useApiFetch<ApiResponse>(`/api/v1/ship/pairing-request/count`)
+    if(res.meta.code != 200) {
+      console.error('failed count pairing api ', res.meta.message ?? "", res.meta.code)
+      return
+    }
+
+    let count = res.data ?? 0
+
+    notificationItems.value[0].title = `(${count}) Pending Pairing Request.`
+  } catch (error) {
+    console.error('error on trying fetch', error)
+  } finally {
+  }
+}
 </script>
 
 <template>

@@ -35,14 +35,13 @@ async function fetchShipDetail() {
     loading.value = false
   }
 }
-
 </script>
 
 <template>
   <DefaultLayout>
-    <div class="mx-auto max-w-270">
+    <div class="mx-auto">
       <!-- Breadcrumb Start -->
-      <BreadcrumbDefault :pageTitle="pageTitle" pageFrom="Ship" />
+      <BreadcrumbDefault :pageTitle="pageTitle" pageFrom="Ship" urlFrom="/ship" />
       <!-- Breadcrumb End -->
       <DetailShipCard  v-if="!loading && shipData" :shipData="shipData" />
     </div>

@@ -9,7 +9,7 @@ const pageTitle = ref('Ships')
 
 <template>
   <DefaultLayout>
-    <div class="mx-auto max-w-270">
+    <div class="mx-auto">
       <!-- Breadcrumb Start -->
       <BreadcrumbDefault :pageTitle="pageTitle" />
       <!-- Breadcrumb End -->

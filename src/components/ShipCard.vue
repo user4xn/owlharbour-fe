@@ -2,7 +2,7 @@
 import { useApiFetch } from '@/composables/axios'
 import type { ApiResponse } from '@/interfaces/api'
 import type { ShipDataInterface } from '@/interfaces/ship'
-import { onMounted, reactive, ref, type Ref } from 'vue'
+import { onMounted, ref, type Ref } from 'vue'
 import { RouterLink } from 'vue-router'
 import WalkGif from '@/assets/images/map/walk.gif'
 import SeaGif from '@/assets/images/map/sea.gif'
@@ -12,7 +12,7 @@ import Pagination from '@/components/PaginationCard.vue'
 const shipsData: Ref<ShipDataInterface[]> = ref([])
 const searchInput = ref('')
 const textBlank = ref('loading...')
-const limit = 6
+const limit = ref(6)
 const offset = ref(0)
 const currentPage = ref(1)
 const totalPages = ref(1)
@@ -24,29 +24,29 @@ onMounted(() => {
 const fetchShips = debounce(async(params: string='') => {
   textBlank.value = 'loading...'
   try {
-    let paramBuilded = `limit=${limit}&offset=${offset.value}&`
+    let paramBuilded = `limit=${limit.value}&offset=${offset.value}&`
     if (params != ''){
       paramBuilded += `search=${params}&`
     }
 
-    const fetch: any = await useApiFetch<ApiResponse>(`/api/v1/ship/list?${paramBuilded}`)
+    const fetch = await useApiFetch<ApiResponse>(`/api/v1/ship/list?${paramBuilded}`)
 
-    if(fetch.meta.code != 200) {
-      console.error('failed fetching statistic api ', fetch.meta.message ?? "", fetch.meta.code)
+    if(fetch?.meta.code != 200) {
+      console.error('failed fetching statistic api ', fetch?.meta.message ?? "", fetch?.meta.code)
     }
 
     shipsData.value = []
 
-    if(fetch.data == null) {
-      textBlank.value = 'no ship found'
+    if(fetch?.data == null) {
+      textBlank.value = 'No Ship Found'
 
       return
     }
 
-    shipsData.value = fetch.data as ShipDataInterface[]
+    shipsData.value = fetch?.data as ShipDataInterface[]
 
-    if (fetch.meta.total ?? 10) {
-      totalPages.value = Math.ceil(fetch.meta.total ?? 10 / limit);
+    if (fetch?.meta.total ?? 10) {
+      totalPages.value = Math.ceil(fetch?.meta.total ?? 10 / limit.value);
     }
   } catch (error) {
     console.error('error on trying fetch', error)
@@ -71,7 +71,7 @@ function borderByStatus(status: string) {
 
 function handlePageChange(page: number) {
   currentPage.value = page;
-  offset.value = (page - 1) * limit;
+  offset.value = (page - 1) * limit.value;
   fetchShips(searchInput.value);
 }
 </script>
@@ -80,7 +80,7 @@ function handlePageChange(page: number) {
   <div
     class="col-span-12 rounded-sm border border-stroke bg-white py-6 shadow-default dark:border-strokedark dark:bg-boxdark xl:col-span-4"
   >
-    <div class="px-5">
+    <div class="px-5 flex justify-between">
       <div class="relative">
         <button class="absolute top-1/2 left-0 -translate-y-1/2">
           <svg
@@ -114,9 +114,15 @@ function handlePageChange(page: number) {
           @keyup="fetchShips(searchInput)"
         />
       </div>
+
+      <select class="bg-gray dark:bg-primary dark:text-white px-3 py-1 rounded-full" v-model="limit" @change="fetchShips()">
+        <option value="6">6</option>
+        <option value="12">12</option>
+        <option value="24">24</option>
+      </select>
     </div>
 
-    <div class="grid grid-cols-1 xl:grid-cols-2 gap-3 px-5 mt-5">
+    <div class="grid grid-cols-1 xl:grid-cols-3 lg:grid-cols-2 gap-3 px-5 mt-5">
       <template v-for="(ship, index) in shipsData" :key="index" class="flex flex-col gap-9">
         <RouterLink
           :to="`/ship/${ship.id}/detail`"
@@ -157,8 +163,8 @@ function handlePageChange(page: number) {
         </ul>
         </RouterLink>
       </template>
-      <div v-if="!shipsData || shipsData.length == 0" class="text-center col-span-2">
-        <span class="text-lg">{{ textBlank }}</span>
+      <div v-if="!shipsData || shipsData.length == 0" class="text-center col-span-3">
+        <span class="text-md text-muted">{{ textBlank }}</span>
       </div>
     </div>
     <Pagination :currentPage="currentPage" :totalPages="totalPages" @pageChange="handlePageChange" />

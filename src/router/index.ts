@@ -6,7 +6,7 @@ import SigninView from '@/views/Authentication/SigninView.vue'
 import SignupView from '@/views/Authentication/SignupView.vue'
 import CalendarView from '@/views/CalendarView.vue'
 import BasicChartView from '@/views/Charts/BasicChartView.vue'
-import MonitorShip from '@/views/Dashboard/MonitorShip.vue'
+import MonitorShipView from '@/views/Dashboard/MonitorShipView.vue'
 import FormElementsView from '@/views/Forms/FormElementsView.vue'
 import FormLayoutView from '@/views/Forms/FormLayoutView.vue'
 import SettingsView from '@/views/Pages/SettingsView.vue'
@@ -16,12 +16,13 @@ import AlertsView from '@/views/UiElements/AlertsView.vue'
 import ButtonsView from '@/views/UiElements/ButtonsView.vue'
 import ShipView from '@/views/Ship/ShipView.vue'
 import ShipDetailView from '@/views/Ship/ShipDetailView.vue'
+import PairingRegistryView from '@/views/Pairing/PairingRegistryView.vue'
 
 const routes = [
   {
     path: '/',
     name: 'dashboard',
-    component: MonitorShip,
+    component: MonitorShipView,
     meta: {
       title: 'Dashboard',
       requiresAuth: true,
@@ -42,6 +43,15 @@ const routes = [
     component: ShipDetailView,
     meta: {
       title: 'Ship Detail',
+      requiresAuth: true,
+    }
+  },
+  {
+    path: '/pairing-registry',
+    name: 'pairing-registry',
+    component: PairingRegistryView,
+    meta: {
+      title: 'Pairing Registry',
       requiresAuth: true,
     }
   },
