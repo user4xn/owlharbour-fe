@@ -76,10 +76,10 @@ const fetchPairingList = debounce(async(params: string='') => {
       return
     }
 
-    pairingList.value = fetch.data as PairingListInterface[]
+    pairingList.value = fetch.data.data as PairingListInterface[]
 
-    if (fetch?.meta.total ?? 10) {
-      totalPages.value = Math.ceil(fetch?.meta.total ?? 10 / limit.value);
+    if (fetch?.data.total ?? 10) {
+      totalPages.value = Math.ceil((fetch?.data.total ?? 10) / limit.value);
     }
   } catch (error) {
     console.error('error on trying fetch', error)

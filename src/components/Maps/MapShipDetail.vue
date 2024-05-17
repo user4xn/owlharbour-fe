@@ -8,7 +8,6 @@ import 'leaflet-rotatedmarker'
 import ShipMarker from '@/assets/images/map/ship-marker.png'
 import FishermanMarker from '@/assets/images/map/fisherman-marker.png'
 import PinMarker from '@/assets/images/map/pin-marker.png'
-import TransparentMarker from '@/assets/images/map/transparent-marker.png'
 
 // @ts-ignore
 import { onMounted, watch, props } from 'vue'
@@ -109,7 +108,7 @@ async function processMarker(ship: any) {
     var marker = L.marker([ship.current_lat, ship.current_long], {
       icon: ship.on_ground === 1 ? fishermanIcon : shipIcon
     })
-    .bindTooltip(ship.ship_name)
+    .bindTooltip(`${ship.ship_name} :Current Location`)
     .addTo(leaflet_layer_groups)
     .on("click", clickZoom)
 
@@ -151,7 +150,11 @@ function clickZoom(e: any) {
 }
 
 function initHistoryShip(data: LocationLogsInterface[]) {
+  leaflet_layer_groups.clearLayers();
+
   if(data == null) {
+    processMarker(props.shipData)
+
     StartToastifyInstance({
       text: "No History Found",
       duration: 3000,
@@ -168,17 +171,25 @@ function initHistoryShip(data: LocationLogsInterface[]) {
   })
 
   const dataLast = data[0]
-  
+
   let markers: any = []
+  leaflet_layer_groups.removeLayer(markers);
   data.forEach((log) => {
-    const { lat, long } = log
-    const marker = L.marker([parseFloat(lat), parseFloat(long)], { icon: pinIcon })
+    const { lat, long, deg_north, created_at } = log
+    const marker = L.marker([parseFloat(lat), parseFloat(long)], { icon: pinIcon }).bindTooltip(`${props.shipData.ship_name} at ${created_at}`)
+    
+    if(log.log_id == dataLast.log_id) {
+      // @ts-ignore
+      marker.setRotationAngle(deg_north)
+    }
+
+    marker.addTo(leaflet_layer_groups)
     markers.push(marker)
-    marker.addTo(leaflet_map)
 
-    const markerElement: any = marker.getElement();
-
-    markerElement.classList.add('mt-2');
+    if(log.log_id != dataLast.log_id) {
+      const markerElement: any = marker.getElement();
+      markerElement.classList.add('mt-2'); 
+    }
 
     marker.on("click", () => {
       leaflet_map.flyTo([parseFloat(lat), parseFloat(long)], 16, {
@@ -193,19 +204,15 @@ function initHistoryShip(data: LocationLogsInterface[]) {
 
     firtsMarker.setIcon(L.icon({ iconUrl: PinMarker, iconSize: [22, 44] }))
 
-    if(dataLast.lat != props.shipData.current_lat || dataLast.long != props.shipData.current_long) {
-      const sizeByZoom = calculateIconSize(leaflet_map.getZoom())
+    const sizeByZoom = calculateIconSize(leaflet_map.getZoom())
 
-      var shipIcon = L.icon({
-        iconUrl: ShipMarker,
-        iconSize: [sizeByZoom[0], sizeByZoom[1]],
-        iconAnchor: [sizeByZoom[0] / 2, sizeByZoom[1]],
-      })
+    var shipIcon = L.icon({
+      iconUrl: ShipMarker,
+      iconSize: [sizeByZoom[0], sizeByZoom[1]],
+      iconAnchor: [sizeByZoom[0] / 2, sizeByZoom[1]],
+    })
 
-      lastMarker.setIcon(shipIcon)
-    } else {
-      lastMarker.setIcon(L.icon({ iconUrl: TransparentMarker, iconSize: [22, 44] }))
-    }
+    lastMarker.setIcon(shipIcon)
 
     firtsMarker.setZIndexOffset(1000)
     lastMarker.setZIndexOffset(1001)
@@ -215,7 +222,7 @@ function initHistoryShip(data: LocationLogsInterface[]) {
   L.polyline(
     markers.map((marker: any) => marker.getLatLng()),
     { dashArray: "6, 6", color: "blue" }
-  ).addTo(leaflet_map)
+  ).addTo(leaflet_layer_groups);
 
   StartToastifyInstance({
     text: `${data.length} Location History Found`,

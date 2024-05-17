@@ -43,10 +43,10 @@ const fetchShips = debounce(async(params: string='') => {
       return
     }
 
-    shipsData.value = fetch?.data as ShipDataInterface[]
+    shipsData.value = fetch?.data.data as ShipDataInterface[]
 
-    if (fetch?.meta.total ?? 10) {
-      totalPages.value = Math.ceil(fetch?.meta.total ?? 10 / limit.value);
+    if (fetch?.data.total ?? 10) {
+      totalPages.value = Math.ceil((fetch?.data.total ?? 10) / limit.value);
     }
   } catch (error) {
     console.error('error on trying fetch', error)

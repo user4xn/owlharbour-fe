@@ -20,6 +20,7 @@ interface LocationLogsInterface {
     long: string
     lat: string
     on_ground: number
+    deg_north: string
     status: string
     created_at: string
 }
