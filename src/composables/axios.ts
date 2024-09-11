@@ -16,7 +16,7 @@ export async function useApiFetch<T>(path: string | (() => string), options: any
   try {
     const response = await axios({
       method: options.method || 'GET',
-      url: 'http://localhost:8081' + apiUrl,
+      url: `${import.meta.env.VITE_API_BASE_URL}` + apiUrl,
       withCredentials: true,
       headers: {
         ...headers,

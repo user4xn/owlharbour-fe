@@ -1,19 +1,19 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import BreadcrumbDefault from '@/components/Breadcrumbs/BreadcrumbDefault.vue'
-import SettingsCard from '@/components/SettingsCard.vue'
+import HarbourSettingsCard from '@/components/HarbourSettingsCard.vue'
 import DefaultLayout from '@/layouts/DefaultLayout.vue'
 
-const pageTitle = ref('Settings Page')
+const pageTitle = ref('Harbour Setting')
 </script>
 
 <template>
   <DefaultLayout>
-    <div class="mx-auto max-w-270">
+    <div class="mx-auto">
       <!-- Breadcrumb Start -->
       <BreadcrumbDefault :pageTitle="pageTitle" />
       <!-- Breadcrumb End -->
-      <SettingsCard />
+      <HarbourSettingsCard />
     </div>
   </DefaultLayout>
 </template>

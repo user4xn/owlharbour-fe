@@ -36,8 +36,8 @@ const fetchShips = debounce(async(params: string='') => {
     }
 
     shipsData.value = []
-
-    if(fetch?.data == null) {
+    
+    if(fetch?.data?.data == null) {
       textBlank.value = 'No Ship Found'
 
       return

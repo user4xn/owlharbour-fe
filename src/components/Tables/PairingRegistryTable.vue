@@ -70,7 +70,7 @@ const fetchPairingList = debounce(async(params: string='') => {
 
     pairingList.value = []
 
-    if(fetch?.data == null) {
+    if(fetch?.data?.data == null) {
       textBlank.value = 'No Submission Found'
 
       return

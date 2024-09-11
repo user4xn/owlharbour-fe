@@ -56,6 +56,15 @@ const routes = [
     }
   },
   {
+    path: '/harbour-setting',
+    name: 'harbour-setting',
+    component: SettingsView,
+    meta: {
+      title: 'Harbour Setting',
+      requiresAuth: true,
+    }
+  },
+  {
     path: '/profile',
     name: 'profile',
     component: ProfileView,

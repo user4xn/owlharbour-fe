@@ -27,7 +27,7 @@ let leaflet_map: any = null
 let leaflet_markers:any = []
 let leaflet_layerGroups:any = null
 let socket: any = null
-let ws_url = "ws://localhost:8081/api/v1/dashboard/ship-monitor/open-websocket"
+let ws_url = `${import.meta.env.VITE_API_WS_URL}/api/v1/dashboard/ship-monitor/open-websocket`
 let harbour_geo: any = []
 
 onMounted(() => {
